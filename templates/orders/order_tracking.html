@@ -1,0 +1,145 @@
+
+{% extends "base.html" %}
+
+{% block title %}Track Order | Shopora{% endblock %}
+
+{% block content %}
+<section class="page-section">
+    <div class="container">
+        <div class="order-tracking-card">
+
+            <header class="tracking-header">
+                <div>
+                    <h1 class="page-title">Track Your Order</h1>
+                    <p class="text-muted">
+                        Follow the latest status of your purchase.
+                    </p>
+                </div>
+
+                <span class="tracking-order-number">
+                    Order #{{ order.pk }}
+                </span>
+            </header>
+
+            <div class="tracking-overview">
+                <div class="tracking-overview-item">
+                    <span class="order-meta-label">Order Date</span>
+                    <strong>
+                        {{ order.created_at|date:"d M Y, h:i A" }}
+                    </strong>
+                </div>
+
+                <div class="tracking-overview-item">
+                    <span class="order-meta-label">Current Status</span>
+                    <strong>{{ order.get_status_display }}</strong>
+                </div>
+
+                <div class="tracking-overview-item">
+                    <span class="order-meta-label">Payment Method</span>
+                    <strong>{{ order.get_payment_method_display }}</strong>
+                </div>
+            </div>
+
+            <div class="tracking-total">
+                <span>Total Order Value</span>
+                <strong>₹{{ order.total_amount|floatformat:2 }}</strong>
+            </div>
+
+            {% if order.status == "cancelled" %}
+                <section class="tracking-cancelled" role="status">
+                    <icon name="circle-x" size="xl" />
+                    <div>
+                        <h2>Order Cancelled</h2>
+                        <p>
+                            This order has been cancelled and is no longer
+                            progressing through delivery.
+                        </p>
+                    </div>
+                </section>
+            {% else %}
+                <section class="tracking-progress-section">
+                    <h2>Delivery Progress</h2>
+                    <p class="text-muted">
+                        Your order's progress is shown below.
+                    </p>
+
+                    <ol class="tracking-timeline">
+                        {% for step in tracking_steps %}
+                            <li class="tracking-step
+                                {% if step.complete %}is-complete{% endif %}
+                                {% if step.current %}is-current{% endif %}">
+                                <div class="tracking-step-marker"
+                                     aria-hidden="true">
+                                    {% if step.complete %}
+                                        <icon name="check" size="sm" />
+                                    {% else %}
+                                        {{ forloop.counter }}
+                                    {% endif %}
+                                </div>
+
+                                <div class="tracking-step-content">
+                                    <h3>{{ step.label }}</h3>
+
+                                    <p>{{ step.description }}</p>
+
+                                    {% if step.current %}
+                                        <span class="tracking-step-state">
+                                            Current Status
+                                        </span>
+                                    {% elif step.complete %}
+                                        <span class="tracking-step-state">
+                                            Completed
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </li>
+                        {% empty %}
+                            <li class="text-muted">
+                                Tracking progress is currently unavailable.
+                            </li>
+                        {% endfor %}
+                    </ol>
+                </section>
+            {% endif %}
+
+            <section class="tracking-items-section">
+                <h2>Items in Your Order</h2>
+
+                {% for item in order.items.all %}
+                    <div class="tracking-order-item">
+                        <div class="tracking-order-item-info">
+                            <strong>{{ item.product_name }}</strong>
+                            <span class="text-muted">
+                                Quantity: {{ item.quantity }}
+                            </span>
+                            <span class="text-muted">
+                                ₹{{ item.unit_price|floatformat:2 }} each
+                            </span>
+                        </div>
+
+                        <strong class="tracking-item-subtotal">
+                            ₹{{ item.subtotal|floatformat:2 }}
+                        </strong>
+                    </div>
+                {% empty %}
+                    <p class="text-muted">
+                        No items found for this order.
+                    </p>
+                {% endfor %}
+            </section>
+
+            <footer class="tracking-actions">
+                <a class="btn" href="{% url 'order_history' %}">
+                    My Orders
+                </a>
+
+                <a class="btn btn-secondary"
+                   href="{% url 'product_list' %}">
+                    Continue Shopping
+                </a>
+            </footer>
+
+        </div>
+    </div>
+</section>
+{% endblock %}

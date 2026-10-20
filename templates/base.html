@@ -1,0 +1,133 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#211f1b">
+    <meta name="description" content="Discover thoughtfully selected everyday essentials at Shopora. Good finds, better days.">
+
+    <title>{% block title %}Shopora | Discover More{% endblock %}</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <script src="{% static 'js/main.js' %}" defer></script>
+
+    {% block extra_head %}{% endblock %}
+</head>
+
+<body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+
+    <div class="announcement-bar">
+        <p>
+            GOOD FINDS. BETTER DAYS.
+            <span class="announcement-divider">/</span>
+            Welcome to Shopora
+        </p>
+    </div>
+
+    <header class="site-header">
+        <nav class="site-nav container" aria-label="Main navigation">
+            <a class="brand" href="{% url 'product_list' %}" aria-label="Shopora home">
+                shopora<span class="brand-period">.</span>
+            </a>
+
+            <button
+                class="menu-toggle"
+                type="button"
+                aria-label="Toggle navigation"
+                aria-expanded="false"
+                aria-controls="site-navigation"
+            >
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+            <div class="nav-links site-navigation" id="site-navigation">
+                <a href="{% url 'product_list' %}">Home</a>
+                <a href="{% url 'product_list' %}#products">Shop All</a>
+                <a href="{% url 'cart_detail' %}">My Cart</a>
+
+                {% if user.is_authenticated %}
+                    <a href="{% url 'account_profile' %}">My Profile</a>
+                    <a href="{% url 'order_history' %}">My Orders</a>
+
+                    {% if user.is_staff %}
+                        <a href="{% url 'admin:index' %}">Admin</a>
+                    {% endif %}
+
+                    <form class="nav-form" method="post" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <button class="nav-button" type="submit">Log Out</button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'login' %}">Log In</a>
+                    <a class="nav-register-link" href="{% url 'register' %}">
+                        Get Started <span aria-hidden="true">↗</span>
+                    </a>
+                {% endif %}
+            </div>
+        </nav>
+    </header>
+
+    <main id="main-content">
+        {% if messages %}
+            <section class="container site-messages" aria-label="Notifications">
+                {% for message in messages %}
+                    <div
+                        class="alert alert-{{ message.tags|default:'info' }}"
+                        role="{% if message.tags == 'error' %}alert{% else %}status{% endif %}"
+                        data-dismissible="true"
+                    >
+                        <span class="alert-message">{{ message }}</span>
+                        <button
+                            class="alert-close"
+                            type="button"
+                            aria-label="Dismiss notification"
+                        >&times;</button>
+                    </div>
+                {% endfor %}
+            </section>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer">
+        <div class="container footer-content">
+            <div class="footer-main">
+                <div class="footer-brand-group">
+                    <a class="footer-brand" href="{% url 'product_list' %}">
+                        shopora<span class="brand-period">.</span>
+                    </a>
+                    <p class="footer-tagline">Good finds. Better days.</p>
+                </div>
+
+                <div class="footer-links">
+                    <a href="{% url 'product_list' %}">Explore Store</a>
+                    <a href="{% url 'cart_detail' %}">Shopping Cart</a>
+
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'order_history' %}">Your Orders</a>
+                    {% else %}
+                        <a href="{% url 'login' %}">Your Account</a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p class="footer-copyright">
+                    &copy; {% now "Y" %} Shopora. All rights reserved.
+                </p>
+                <p class="footer-note">Made for your everyday.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,69 @@
+
+{% extends "base.html" %}
+
+{% block title %}Create Account | Shopora{% endblock %}
+
+{% block content %}
+<section class="page-section">
+    <div class="container">
+        <div class="form-container auth-card">
+            <div class="auth-heading">
+                <h1>Create Your Account</h1>
+                <p class="text-muted">
+                    Join Shopora and discover products you'll love.
+                </p>
+            </div>
+
+            {% if form.non_field_errors %}
+                <div class="form-errors" role="alert">
+                    {% for error in form.non_field_errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <form
+                method="post"
+                action="{% url 'register' %}"
+                data-prevent-double-submit="true"
+            >
+                {% csrf_token %}
+
+                {% for field in form %}
+                    <div class="form-group">
+                        <label class="form-label" for="{{ field.id_for_label }}">
+                            {{ field.label }}
+                            {% if field.field.required %}
+                                <span aria-hidden="true">*</span>
+                            {% endif %}
+                        </label>
+
+                        {{ field }}
+
+                        {% if field.help_text %}
+                            <div class="form-help">
+                                {{ field.help_text|safe }}
+                            </div>
+                        {% endif %}
+
+                        {% for error in field.errors %}
+                            <p class="field-errors" role="alert">
+                                {{ error }}
+                            </p>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+
+                <button class="btn btn-block auth-submit" type="submit">
+                    Create Account
+                </button>
+            </form>
+
+            <p class="auth-footer">
+                Already have an account?
+                <a href="{% url 'login' %}">Log in</a>
+            </p>
+        </div>
+    </div>
+</section>
+{% endblock %}

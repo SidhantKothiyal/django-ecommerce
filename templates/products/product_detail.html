@@ -1,0 +1,121 @@
+
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }} | Shopora{% endblock %}
+
+{% block content %}
+<section class="page-section">
+    <div class="container">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <a href="{% url 'product_list' %}">Home</a>
+            <span aria-hidden="true">/</span>
+            <span aria-current="page">{{ product.name }}</span>
+        </nav>
+
+        <article class="product-detail-card">
+            <div class="product-detail-layout">
+                <div class="product-detail-image-wrapper">
+                    {% if product.image %}
+                        <img
+                            class="product-detail-image"
+                            src="{{ product.image.url }}"
+                            alt="{{ product.name }}"
+                            data-image-fallback
+                        >
+                    {% else %}
+                        <div class="product-detail-image-placeholder">
+                            <icon name="image" size="2xl" />
+                            <span>No image available</span>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="product-detail-info">
+                    <span class="product-category-label">
+                        Shopora Collection
+                    </span>
+
+                    <h1 class="page-title">{{ product.name }}</h1>
+
+                    <p class="product-detail-price">
+                        ₹{{ product.price|floatformat:2 }}
+                    </p>
+
+                    <div class="product-detail-description">
+                        <h2>Description</h2>
+                        <p>{{ product.description|default:"No description available."|linebreaksbr }}</p>
+                    </div>
+
+                    {% if product.stock > 0 and product.is_available %}
+                        <p class="product-stock-status in-stock">
+                            <icon name="check-circle" size="sm" />
+                            <strong>In stock</strong>
+                            <span>({{ product.stock }} available)</span>
+                        </p>
+
+                        <form
+                            class="product-detail-cart-form"
+                            method="post"
+                            action="{% url 'cart_add' product.pk %}"
+                            data-add-to-cart-button
+                        >
+                            {% csrf_token %}
+
+                            <div class="product-quantity-control">
+                                <label for="product-quantity">Quantity</label>
+
+                                <input
+                                    class="form-control"
+                                    type="number"
+                                    id="product-quantity"
+                                    name="quantity"
+                                    value="1"
+                                    min="1"
+                                    max="{{ product.stock }}"
+                                    step="1"
+                                    required
+                                    inputmode="numeric"
+                                    data-quantity-input
+                                >
+                            </div>
+
+                            <button class="btn btn-block product-add-button"
+                                    type="submit">
+                                <icon name="shopping-cart" size="sm" />
+                                Add to Cart
+                            </button>
+                        </form>
+                    {% else %}
+                        <p class="product-stock-status out-of-stock">
+                            <icon name="circle-x" size="sm" />
+                            <strong>Currently unavailable</strong>
+                        </p>
+
+                        <button class="btn btn-block" type="button" disabled>
+                            Out of Stock
+                        </button>
+                    {% endif %}
+
+                    <div class="product-detail-benefits">
+                        <div>
+                            <icon name="package-check" size="lg" />
+                            <span>Order tracking available</span>
+                        </div>
+
+                        <div>
+                            <icon name="banknote" size="lg" />
+                            <span>Cash on Delivery</span>
+                        </div>
+                    </div>
+
+                    <a class="btn btn-secondary product-continue-link"
+                       href="{% url 'product_list' %}">
+                        <icon name="arrow-left" size="sm" />
+                        Continue Shopping
+                    </a>
+                </div>
+            </div>
+        </article>
+    </div>
+</section>
+{% endblock %}

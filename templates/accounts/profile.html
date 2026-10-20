@@ -1,0 +1,66 @@
+
+{% extends "base.html" %}
+
+{% block title %}My Profile | Shopora{% endblock %}
+
+{% block content %}
+<section class="page-section">
+    <div class="container">
+        <div class="profile-card">
+            <div class="profile-header">
+                <div class="profile-avatar" aria-hidden="true">
+                    {{ user.username|first|upper }}
+                </div>
+
+                <div>
+                    <h1 class="page-title">My Profile</h1>
+                    <p class="text-muted">
+                        Welcome back, <strong>{{ user.username }}</strong>!
+                    </p>
+                </div>
+            </div>
+
+            <hr class="profile-divider">
+
+            <h2 class="profile-section-title">Account Information</h2>
+
+            <dl class="profile-details">
+                <div class="profile-detail-row">
+                    <dt>Username</dt>
+                    <dd>{{ user.username }}</dd>
+                </div>
+
+                <div class="profile-detail-row">
+                    <dt>Email address</dt>
+                    <dd>
+                        {% if user.email %}
+                            {{ user.email }}
+                        {% else %}
+                            Not provided
+                        {% endif %}
+                    </dd>
+                </div>
+
+                <div class="profile-detail-row">
+                    <dt>Member since</dt>
+                    <dd>{{ user.date_joined|date:"d M Y" }}</dd>
+                </div>
+            </dl>
+
+            <div class="profile-actions">
+                <a class="btn" href="{% url 'product_list' %}">
+                    Continue Shopping
+                </a>
+
+                <a class="btn btn-secondary" href="{% url 'cart_detail' %}">
+                    View Cart
+                </a>
+
+                <a class="btn btn-secondary" href="{% url 'order_history' %}">
+                    My Orders
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,108 @@
+
+{% extends "base.html" %}
+
+{% block title %}Order Confirmation | Shopora{% endblock %}
+
+{% block content %}
+<section class="page-section">
+    <div class="container">
+        <div class="order-confirmation-card">
+
+            <header class="order-success-header">
+                <div class="order-success-icon" aria-hidden="true">
+                    <icon name="check-circle" size="2xl" />
+                </div>
+
+                <h1>Order Placed Successfully!</h1>
+
+                <p>
+                    Thank you for shopping with Shopora.
+                    Your order has been recorded.
+                </p>
+
+                <span class="order-number">
+                    Order #{{ order.pk }}
+                </span>
+            </header>
+
+            <div class="order-status-grid">
+                <div class="order-status-item">
+                    <span class="order-meta-label">Order Status</span>
+                    <strong>{{ order.get_status_display }}</strong>
+                </div>
+
+                <div class="order-status-item">
+                    <span class="order-meta-label">Payment Method</span>
+                    <strong>{{ order.get_payment_method_display }}</strong>
+                </div>
+
+                <div class="order-status-item">
+                    <span class="order-meta-label">Payment Status</span>
+                    <strong>{{ order.get_payment_status_display }}</strong>
+                </div>
+            </div>
+
+            <div class="confirmation-total">
+                <span>Total payable</span>
+                <strong>₹{{ order.total_amount|floatformat:2 }}</strong>
+            </div>
+
+            <section class="confirmation-section">
+                <h2>Items Ordered</h2>
+
+                {% for item in order.items.all %}
+                    <div class="confirmation-item">
+                        <div class="confirmation-item-info">
+                            <strong>{{ item.product_name }}</strong>
+
+                            <span class="text-muted">
+                                ₹{{ item.unit_price|floatformat:2 }}
+                                × {{ item.quantity }}
+                            </span>
+                        </div>
+
+                        <strong class="confirmation-item-subtotal">
+                            ₹{{ item.subtotal|floatformat:2 }}
+                        </strong>
+                    </div>
+                {% empty %}
+                    <p class="text-muted">
+                        No order items are available to display.
+                    </p>
+                {% endfor %}
+            </section>
+
+            <section class="confirmation-section">
+                <h2>Delivery Address</h2>
+
+                <address class="delivery-address">
+                    <strong>{{ order.full_name }}</strong><br>
+                    {{ order.address_line1 }}<br>
+
+                    {% if order.address_line2 %}
+                        {{ order.address_line2 }}<br>
+                    {% endif %}
+
+                    {{ order.city }}, {{ order.state }}
+                    - {{ order.postal_code }}<br>
+
+                    Phone: {{ order.phone }}<br>
+                    Email: {{ order.email }}
+                </address>
+            </section>
+
+            <div class="confirmation-actions">
+                <a class="btn" href="{% url 'product_list' %}">
+                    Continue Shopping
+                </a>
+
+                <a class="btn btn-secondary"
+                   href="{% url 'order_history' %}">
+                    My Orders
+                </a>
+            </div>
+
+        </div>
+    </div>
+</section>
+{% endblock %}

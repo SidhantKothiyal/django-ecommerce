@@ -1,0 +1,298 @@
+
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Shopora | Discover Your Next Favourite{% endblock %}
+
+{% block content %}
+
+<section class="shop-hero">
+    <div class="container shop-hero-inner">
+        <div class="shop-hero-copy">
+            <span class="shop-eyebrow">
+                YOUR EVERYDAY SHOPPING DESTINATION
+            </span>
+
+            <h1>
+                Good finds.<br>
+                <span>Better everyday.</span>
+            </h1>
+
+            <p>
+                Discover useful essentials, upgrade your everyday,
+                and find products you'll love — all in one place.
+            </p>
+
+            <div class="shop-hero-actions">
+                <a class="btn shop-hero-button" href="#products">
+                    Explore Collection <span aria-hidden="true">→</span>
+                </a>
+
+                <span class="shop-trust-note">
+                    Thoughtful picks for everyday life
+                </span>
+            </div>
+
+            <div class="shop-hero-features">
+                <div>
+                    <strong>Easy</strong>
+                    <span>Browsing</span>
+                </div>
+                <div>
+                    <strong>Secure</strong>
+                    <span>Shopping</span>
+                </div>
+                <div>
+                    <strong>Everyday</strong>
+                    <span>Essentials</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="shop-hero-visual" aria-label="Shopora collection highlights">
+            <div class="hero-orbit hero-orbit-one"></div>
+            <div class="hero-orbit hero-orbit-two"></div>
+
+            <div class="hero-floating-card hero-card-top">
+                <span class="hero-card-icon">✦</span>
+                <div>
+                    <strong>Made for your day</strong>
+                    <span>Explore your next favourite</span>
+                </div>
+            </div>
+
+            <div class="hero-product-stack">
+                <div class="hero-product-tile hero-tile-back">
+                    <span>YOUR DAILY ESSENTIALS</span>
+                    <div class="hero-tile-shape shape-circle"></div>
+                </div>
+
+                <div class="hero-product-tile hero-tile-front">
+                    <span>THE EVERYDAY EDIT</span>
+                    <div class="hero-tile-shape shape-square"></div>
+                    <div class="hero-tile-caption">
+                        <strong>Find your thing.</strong>
+                        <span>Love what you choose.</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hero-floating-card hero-card-bottom">
+                <span class="hero-check">✓</span>
+                <div>
+                    <strong>Ready to explore?</strong>
+                    <span>Your next find is waiting.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="shop-benefits">
+    <div class="container shop-benefits-inner">
+        <div class="shop-benefit">
+            <span class="benefit-icon">◇</span>
+            <div>
+                <strong>Curated essentials</strong>
+                <span>Useful picks for everyday</span>
+            </div>
+        </div>
+
+        <div class="shop-benefit">
+            <span class="benefit-icon">◎</span>
+            <div>
+                <strong>Simple shopping</strong>
+                <span>Find what you need easily</span>
+            </div>
+        </div>
+
+        <div class="shop-benefit">
+            <span class="benefit-icon">↗</span>
+            <div>
+                <strong>Discover more</strong>
+                <span>Explore our growing collection</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="page-section shop-section" id="products">
+    <div class="container">
+
+        <div class="shop-section-header">
+            <div>
+                <span class="shop-section-eyebrow">THE SHOPORA COLLECTION</span>
+
+                <h2 class="section-title">
+                    {% if request.GET.q %}
+                        Search results
+                    {% else %}
+                        Find your favourites<span class="shop-title-dot">.</span>
+                    {% endif %}
+                </h2>
+
+                <p class="text-muted">
+                    {% if request.GET.q %}
+                        Results for "{{ request.GET.q|truncatechars:80 }}"
+                    {% else %}
+                        Everyday essentials, all in one place.
+                    {% endif %}
+                </p>
+            </div>
+
+            {% if products %}
+                <span class="shop-results-count">
+                    {{ products|length }} item{{ products|length|pluralize }}
+                </span>
+            {% endif %}
+        </div>
+
+        <form
+            class="shop-search-form"
+            method="get"
+            action="{% url 'product_list' %}"
+            role="search"
+        >
+            <label class="visually-hidden" for="product-search">
+                Search products
+            </label>
+
+            <span class="shop-search-icon" aria-hidden="true">⌕</span>
+
+            <input
+                class="form-control shop-search-input"
+                type="search"
+                id="product-search"
+                name="q"
+                value="{{ request.GET.q|default:'' }}"
+                placeholder="What are you looking for?"
+                maxlength="100"
+                autocomplete="off"
+            >
+
+            <button class="btn shop-search-button" type="submit">
+                Search <span aria-hidden="true">→</span>
+            </button>
+
+            {% if request.GET.q %}
+                <a class="shop-clear-search" href="{% url 'product_list' %}">
+                    Clear
+                </a>
+            {% endif %}
+        </form>
+
+        {% if products %}
+            <div class="product-grid shop-product-grid">
+                {% for product in products %}
+                    <article class="product-card shop-product-card">
+
+                        <a
+                            class="product-card-image-link shop-product-image-link"
+                            href="{% url 'product_detail' product.pk %}"
+                            aria-label="View {{ product.name }}"
+                        >
+                            {% if product.image %}
+                                <img
+                                    class="product-image shop-product-image"
+                                    src="{{ product.image.url }}"
+                                    alt="{{ product.name }}"
+                                    loading="{% if forloop.counter <= 4 %}eager{% else %}lazy{% endif %}"
+                                    {% if forloop.counter <= 4 %}fetchpriority="high"{% endif %}
+                                    data-image-fallback
+                                >
+                            {% else %}
+                                <div class="product-image product-image-placeholder shop-image-placeholder">
+                                    <span class="placeholder-symbol" aria-hidden="true">✳</span>
+                                    <span>Image coming soon</span>
+                                </div>
+                            {% endif %}
+
+                            {% if product.is_available and product.stock > 0 %}
+                                <span class="shop-product-badge">Available</span>
+                            {% else %}
+                                <span class="shop-product-badge shop-product-badge-muted">
+                                    Sold out
+                                </span>
+                            {% endif %}
+
+                            <span class="shop-image-action" aria-hidden="true">↗</span>
+                        </a>
+
+                        <div class="product-content shop-product-content">
+                            <div class="shop-product-meta">
+                                <span>SHOPORA PICK</span>
+                            </div>
+
+                            <h3 class="product-card-title shop-product-title">
+                                <a href="{% url 'product_detail' product.pk %}">
+                                    {{ product.name }}
+                                </a>
+                            </h3>
+
+                            <p class="product-card-description shop-product-description">
+                                {{ product.description|default:"A useful everyday essential. Explore the details to learn more."|truncatechars:100 }}
+                            </p>
+
+                            <div class="shop-product-bottom">
+                                <p class="price product-card-price shop-product-price">
+                                    ₹{{ product.price|floatformat:2 }}
+                                </p>
+
+                                <a
+                                    class="shop-product-view"
+                                    href="{% url 'product_detail' product.pk %}"
+                                    aria-label="View details for {{ product.name }}"
+                                >
+                                    View details <span aria-hidden="true">→</span>
+                                </a>
+                            </div>
+
+                            {% if product.is_available and product.stock > 0 %}
+                                <p class="product-stock-label in-stock shop-stock-label">
+                                    <span class="stock-indicator" aria-hidden="true"></span>
+                                    In stock
+                                </p>
+                            {% else %}
+                                <p class="product-stock-label out-of-stock shop-stock-label">
+                                    <span class="stock-indicator" aria-hidden="true"></span>
+                                    Currently unavailable
+                                </p>
+                            {% endif %}
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+
+        {% else %}
+            <div class="shop-empty-state">
+                <div class="shop-empty-icon" aria-hidden="true">⌕</div>
+
+                {% if request.GET.q %}
+                    <h3>No matching products found</h3>
+                    <p>
+                        Try another search term, or clear your search
+                        to explore the full collection.
+                    </p>
+                {% else %}
+                    <h3>Your collection starts here</h3>
+                    <p>
+                        There are no available products to display right now.
+                        Please check back soon.
+                    </p>
+                {% endif %}
+
+                <a class="btn" href="{% url 'product_list' %}">
+                    Explore all products
+                </a>
+            </div>
+        {% endif %}
+
+        <div class="shop-bottom-note">
+            <span class="shop-bottom-star" aria-hidden="true">✳</span>
+            <p>Good things for everyday living. <strong>That's Shopora.</strong></p>
+        </div>
+
+    </div>
+</section>
+
+{% endblock %}

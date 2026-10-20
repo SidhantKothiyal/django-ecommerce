@@ -1,0 +1,138 @@
+
+{% extends "base.html" %}
+
+{% block title %}My Orders | Shopora{% endblock %}
+
+{% block content %}
+<section class="page-section">
+    <div class="container">
+        <header class="orders-page-header">
+            <div>
+                <h1 class="page-title">My Orders</h1>
+                <p class="text-muted">
+                    View your purchases, track progress, and manage eligible orders.
+                </p>
+            </div>
+
+            <a class="btn btn-secondary" href="{% url 'product_list' %}">
+                Continue Shopping
+            </a>
+        </header>
+
+        {% if orders %}
+            <div class="orders-list">
+                {% for order in orders %}
+                    <article class="order-card">
+                        <header class="order-card-header">
+                            <div>
+                                <h2>Order #{{ order.pk }}</h2>
+                                <p class="text-muted">
+                                    Placed on
+                                    {{ order.created_at|date:"d M Y, h:i A" }}
+                                </p>
+                            </div>
+
+                            <div class="order-card-total">
+                                <span class="order-meta-label">Order Total</span>
+                                <strong>
+                                    ₹{{ order.total_amount|floatformat:2 }}
+                                </strong>
+                            </div>
+                        </header>
+
+                        <div class="order-card-meta">
+                            <div>
+                                <span class="order-meta-label">Order Status</span>
+                                <strong class="order-status-text">
+                                    {{ order.get_status_display }}
+                                </strong>
+                            </div>
+
+                            <div>
+                                <span class="order-meta-label">Payment Method</span>
+                                <strong>
+                                    {{ order.get_payment_method_display }}
+                                </strong>
+                            </div>
+
+                            <div>
+                                <span class="order-meta-label">Payment Status</span>
+                                <strong>
+                                    {{ order.get_payment_status_display }}
+                                </strong>
+                            </div>
+                        </div>
+
+                        <section class="order-card-items">
+                            <h3>Items Ordered</h3>
+
+                            {% for item in order.items.all %}
+                                <div class="order-history-item">
+                                    <div class="order-history-item-info">
+                                        <strong>{{ item.product_name }}</strong>
+                                        <span class="text-muted">
+                                            {{ item.quantity }} ×
+                                            ₹{{ item.unit_price|floatformat:2 }}
+                                        </span>
+                                    </div>
+
+                                    <strong>
+                                        ₹{{ item.subtotal|floatformat:2 }}
+                                    </strong>
+                                </div>
+                            {% empty %}
+                                <p class="text-muted">
+                                    No items are available for this order.
+                                </p>
+                            {% endfor %}
+                        </section>
+
+                        <footer class="order-card-actions">
+                            <a class="btn"
+                               href="{% url 'order_confirmation' order.pk %}">
+                                View Order
+                            </a>
+
+                            <a class="btn btn-secondary"
+                               href="{% url 'order_tracking' order.pk %}">
+                                Track Order
+                            </a>
+
+                            {% if order.status == "placed" or order.status == "processing" %}
+                                <form
+                                    method="post"
+                                    action="{% url 'cancel_order' order.pk %}"
+                                    data-prevent-double-submit="true"
+                                >
+                                    {% csrf_token %}
+
+                                    <button class="btn btn-danger"
+                                            type="submit">
+                                        Cancel Order
+                                    </button>
+                                </form>
+                            {% endif %}
+                        </footer>
+                    </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-state-icon" aria-hidden="true">
+                    <icon name="package" size="2xl" />
+                </div>
+
+                <h2>No orders yet</h2>
+
+                <p class="text-muted">
+                    Once you place an order, its details will appear here.
+                </p>
+
+                <a class="btn" href="{% url 'product_list' %}">
+                    Start Shopping
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
